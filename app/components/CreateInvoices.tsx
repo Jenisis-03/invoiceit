@@ -24,7 +24,19 @@ import { parseWithZod } from "@conform-to/zod";
 import { invoiceSchema } from "../utils/zodSchemas";
 import { formatCurrency } from "../utils/formatCurrency";
 
-export default function CreateInvoices() {
+interface iAppProps {
+  firstName: string;
+  lastName: string;
+  email: string;
+  address: string;
+}
+
+export default function CreateInvoices({
+  address,
+  email,
+  firstName,
+  lastName,
+}: iAppProps) {
   const [lastResult, action] = useActionState(CreateInvoice, undefined);
   const [form, fields] = useForm({
     lastResult,
@@ -51,11 +63,7 @@ export default function CreateInvoices() {
           name={fields.date.name}
           value={selectedDate.toISOString()}
         />
-        <input
-            type="hidden"
-            name={fields.total.name}
-            value={calculateTotal}
-          />
+        <input type="hidden" name={fields.total.name} value={calculateTotal} />
 
         <CardContent className="p-6">
           <div className="flex flex-col gap-1 w-fit mb-6">
@@ -117,12 +125,14 @@ export default function CreateInvoices() {
                   name={fields.formName.name}
                   key={fields.formName.key}
                   placeholder="Your Name"
+                  defaultValue={firstName + " " + lastName}
                 />
                 <p className="text-red-500 text-sm">{fields.formName.errors}</p>
                 <Input
                   placeholder="Your Email"
                   name={fields.formEmail.name}
                   key={fields.formEmail.key}
+                  defaultValue={email}
                 />
                 <p className="text-red-500 text-sm">
                   {fields.formEmail.errors}
@@ -131,6 +141,7 @@ export default function CreateInvoices() {
                   placeholder="Your Address"
                   name={fields.formAddress.name}
                   key={fields.formAddress.key}
+                  defaultValue={address}
                 />
                 <p className="text-red-500 text-sm">
                   {fields.formAddress.errors}
@@ -271,10 +282,13 @@ export default function CreateInvoices() {
                 </p>
               </div>
               <div className="col-span-2">
-                <Input value={formatCurrency({
+                <Input
+                  value={formatCurrency({
                     amount: calculateTotal,
                     currency: currency as any,
-                  })} disabled />
+                  })}
+                  disabled
+                />
               </div>
             </div>
           </div>
