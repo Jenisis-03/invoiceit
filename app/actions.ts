@@ -89,3 +89,61 @@ export async function CreateInvoice(prevState: any, formData: FormData) {
   });
   return redirect("/dashboard/invoices");
 }
+
+export async function editInvoice(prevState: any, formData: FormData) {
+  const session = await requireUser();
+  const submission = parseWithZod(formData, {
+    schema: invoiceSchema,
+  });
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+  const data = await prisma.invoice.update({
+    where: {
+      id: formData.get("id") as string,
+      userId: session.user?.id,
+    },
+    data: {
+      clientAddress: submission.value.clientAddress,
+      clientEmail: submission.value.clientEmail,
+      clientName: submission.value.clientName,
+      currency: submission.value.currency,
+      date: submission.value.date,
+      dueDate: submission.value.dueDate,
+      formAddress: submission.value.formAddress,
+      formEmail: submission.value.formEmail,
+      formName: submission.value.formName,
+      invoiceItemDescription: submission.value.invoiceItemDescription,
+      invoiceItemQuantity: submission.value.invoiceItemQuantity,
+      invoiceItemRate: submission.value.invoiceItemRate,
+      invoiceName: submission.value.invoiceName,
+      invoiceNumber: submission.value.invoiceNumber,
+      status: submission.value.status,
+      total: submission.value.total,
+      note: submission.value.note,
+    },
+  });
+  const sender = {
+    email: "hello@demomailtrap.com",
+    name: "Subham",
+  };
+
+  emailClient.send({
+    from: sender,
+    to: [{ email: "subhamwworks@gmail.com" }],
+    template_uuid: "320f205e-f4e6-4084-86ea-a8236d60dbc5",
+    template_variables: {
+      Client_Name: submission.value.clientName,
+      invoicenumber: submission.value.invoiceNumber,
+      duedate: new Intl.DateTimeFormat("en-US", {
+        dateStyle: "long",
+      }).format(new Date(submission.value.date)),
+      totalamount: formatCurrency({
+        amount: submission.value.total,
+        currency: submission.value.currency as any,
+      }),
+      invoiceLink: `http://localhost:3000/api/invoice/${data.id}`,
+    },
+  });
+  return redirect("/dashboard/invoices");
+}
