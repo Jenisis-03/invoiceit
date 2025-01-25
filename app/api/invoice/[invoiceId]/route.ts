@@ -21,9 +21,9 @@ export async function GET(
       invoiceName: true,
       invoiceNumber: true,
       currency: true,
-      formName: true,
-      formEmail: true,
-      formAddress: true,
+      fromName: true,
+      fromEmail: true,
+      fromAddress: true,
       clientName: true,
       clientAddress: true,
       clientEmail: true,
@@ -50,17 +50,17 @@ export async function GET(
   // set font
   pdf.setFont("helvetica");
 
-  // Font
-  pdf.setFontSize(25);
-  pdf.text(data.invoiceName, 10, 20);
+  //set header
+  pdf.setFontSize(24);
+  pdf.text(data.invoiceName, 20, 20);
 
-  // Form Section
+  // From Section
   pdf.setFontSize(12);
   pdf.text("From", 20, 40);
   pdf.setFontSize(10);
-  pdf.text([data.formName, data.formEmail, data.formAddress], 20, 45);
+  pdf.text([data.fromName, data.fromEmail, data.fromAddress], 20, 45);
 
-  //Client Section
+  // Client Section
   pdf.setFontSize(12);
   pdf.text("Bill to", 20, 70);
   pdf.setFontSize(10);
@@ -106,6 +106,7 @@ export async function GET(
     160,
     110
   );
+
   // Total Section
   pdf.line(20, 115, 190, 115);
   pdf.setFont("helvetica", "bold");
@@ -124,10 +125,10 @@ export async function GET(
     pdf.text(data.note, 20, 155);
   }
 
-  //GEnerate PDF as Bufffer
+  // generate pdf as buffer
   const pdfBuffer = Buffer.from(pdf.output("arraybuffer"));
 
-  //Return PDF as Download
+  //return pdf as download
 
   return new NextResponse(pdfBuffer, {
     headers: {

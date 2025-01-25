@@ -11,13 +11,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { signOut } from "../utils/auth";
 import prisma from "../utils/db";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 async function getUser(userId: string) {
   const data = await prisma.user.findUnique({
@@ -31,8 +32,8 @@ async function getUser(userId: string) {
     },
   });
 
-  if (!data?.firstName || !data?.lastName || !data.address) {
-    redirect("/Onboarding");
+  if (!data?.firstName || !data.lastName || !data.address) {
+    redirect("/onboarding");
   }
 }
 
@@ -45,24 +46,25 @@ export default async function DashboardLayout({
   const data = await getUser(session.user?.id as string);
   return (
     <>
-      <div className="grid min-h-screen w-full md:grid-cols-[220px_2fr] lg:grid-cols-[280px_1fr]">
+      <div className="grid min-h-screen w-full md:gird-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <div className="hidden border-r bg-muted/40 md:block">
           <div className="flex flex-col max-h-screen h-full gap-2">
             <div className="h-14 flex items-center border-b px-4 lg:h-[60px] lg:px-6">
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center gap-2">
                 <Image src={Logo} alt="Logo" className="size-7" />
                 <p className="text-2xl font-bold">
-                  Invoice <span className="text-red-700">It</span>
+                  Invoice<span className="text-blue-600">IT</span>
                 </p>
               </Link>
             </div>
             <div className="flex-1">
-              <nav className="grid items-center px-2 text-sm font-medium lg:px-4">
+              <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
                 <DashboardLinks />
               </nav>
             </div>
           </div>
         </div>
+
         <div className="flex flex-col">
           <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
             <Sheet>
@@ -77,6 +79,7 @@ export default async function DashboardLayout({
                 </nav>
               </SheetContent>
             </Sheet>
+
             <div className="flex items-center ml-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -106,7 +109,7 @@ export default async function DashboardLayout({
                         await signOut();
                       }}
                     >
-                      <button className="w-full text-left">Log Out</button>
+                      <button className="w-full text-left">Log out</button>
                     </form>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -118,7 +121,7 @@ export default async function DashboardLayout({
           </main>
         </div>
       </div>
+      <Toaster richColors closeButton theme="light" />
     </>
   );
 }
-

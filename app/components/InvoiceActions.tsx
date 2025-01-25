@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,20 +8,37 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  DownloadIcon,
-  MailIcon,
+  CheckCircle,
+  DownloadCloudIcon,
+  Mail,
   MoreHorizontal,
   Pencil,
-  Trash2Icon,
-  CheckCircle,
+  Trash,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface iAppProps {
   id: string;
+  status: string;
 }
+export function InvoiceActions({ id, status }: iAppProps) {
+  const handleSendReminder = () => {
+    toast.promise(
+      fetch(`/api/email/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      {
+        loading: "Sending reminder email...",
+        success: "Reminder email sent successfully",
+        error: "Failed to send reminder email",
+      }
+    );
+  };
 
-export function InvoiceActions({ id }: iAppProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,36 +49,30 @@ export function InvoiceActions({ id }: iAppProps) {
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
           <Link href={`/dashboard/invoices/${id}`}>
-            <Pencil className="size-4 mr-2" />
-            Edit
+            <Pencil className="size-4 mr-2" /> Edit Invoice
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href={`/api/invoice/${id}`} target="_blank">
-            <DownloadIcon className="size-4 mr-2" />
-            Download Invoices
+            <DownloadCloudIcon className="size-4 mr-2" /> Download Invoice
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSendReminder}>
+          <Mail className="size-4 mr-2" /> Reminder Email
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/">
-            <MailIcon className="size-4 mr-2" />
-            Reminder Email
+          <Link href={`/dashboard/invoices/${id}/delete`}>
+            <Trash className="size-4 mr-2" /> Delete Invoice
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/">
-            <Trash2Icon className="size-4 mr-2" />
-            Delete
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/">
-            <CheckCircle className="size-4 mr-2" />
-            Mark As Paid
-          </Link>
-        </DropdownMenuItem>
+        {status !== "PAID" && (
+          <DropdownMenuItem asChild>
+            <Link href={`/dashboard/invoices/${id}/paid`}>
+              <CheckCircle className="size-4 mr-2" /> Mark as Paid
+            </Link>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
-//https://youtu.be/AH3xlNuui_A?t=12377

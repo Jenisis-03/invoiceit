@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardContent,
@@ -31,16 +32,19 @@ export default function Onboarding() {
   });
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div>
+      </div>
       <Card className="max-w-sm mx-auto">
         <CardHeader>
-          <CardTitle className="text-xl">You are almost there!</CardTitle>
+          <CardTitle className="text-xl">You are almost finished!</CardTitle>
           <CardDescription>
-            Enter Your Information To Create An Account
+            Enter your information to create an account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form
-            className="grid gap-5"
+            className="grid gap-4"
             action={action}
             id={form.id}
             onSubmit={form.onSubmit}
@@ -51,11 +55,11 @@ export default function Onboarding() {
                 <Label>First Name</Label>
                 <Input
                   name={fields.firstName.name}
-                  key={fields.firstName.name}
+                  key={fields.firstName.key}
                   defaultValue={fields.firstName.initialValue}
-                  placeholder="Joe"
+                  placeholder="John"
                 />
-                <p className="text-red-600 text-sm">
+                <p className="text-red-500 text-sm">
                   {fields.firstName.errors}
                 </p>
               </div>
@@ -63,24 +67,26 @@ export default function Onboarding() {
                 <Label>Last Name</Label>
                 <Input
                   name={fields.lastName.name}
-                  key={fields.lastName.name}
+                  key={fields.lastName.key}
                   defaultValue={fields.lastName.initialValue}
-                  placeholder="Lui"
+                  placeholder="Doe"
                 />
-                <p className="text-red-600 text-sm">{fields.lastName.errors}</p>
+                <p className="text-red-500 text-sm">{fields.lastName.errors}</p>
               </div>
             </div>
+
             <div className="grid gap-2">
               <Label>Address</Label>
               <Input
                 name={fields.address.name}
                 key={fields.address.key}
                 defaultValue={fields.address.initialValue}
-                placeholder="123 Main St"
+                placeholder="Chad street 123"
               />
-              <p className="text-red-600 text-sm">{fields.address.errors}</p>
+              <p className="text-red-500 text-sm">{fields.address.errors}</p>
             </div>
-            <SubmitButton text="Finish Onboarding" />
+
+            <SubmitButton text="Finish onboarding" />
           </form>
         </CardContent>
       </Card>

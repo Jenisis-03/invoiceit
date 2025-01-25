@@ -7,6 +7,7 @@ import prisma from "./utils/db";
 import { redirect } from "next/navigation";
 import { emailClient } from "./utils/mailtrap";
 import { formatCurrency } from "./utils/formatCurrency";
+import { NextResponse } from "next/server";
 
 export async function onboardUser(prevState: any, formData: FormData) {
   const session = await requireUser();
@@ -32,7 +33,7 @@ export async function onboardUser(prevState: any, formData: FormData) {
   return redirect("/dashboard");
 }
 
-export async function CreateInvoice(prevState: any, formData: FormData) {
+export async function createInvoice(prevState: any, formData: FormData) {
   const session = await requireUser();
   const submission = parseWithZod(formData, {
     schema: invoiceSchema,
@@ -49,9 +50,9 @@ export async function CreateInvoice(prevState: any, formData: FormData) {
       currency: submission.value.currency,
       date: submission.value.date,
       dueDate: submission.value.dueDate,
-      formAddress: submission.value.formAddress,
-      formName: submission.value.formName,
-      formEmail: submission.value.formEmail,
+      fromAddress: submission.value.fromAddress,
+      fromName: submission.value.fromName,
+      fromEmail: submission.value.fromEmail,
       invoiceNumber: submission.value.invoiceNumber,
       invoiceItemDescription: submission.value.invoiceItemDescription,
       invoiceItemQuantity: submission.value.invoiceItemQuantity,
@@ -110,9 +111,9 @@ export async function editInvoice(prevState: any, formData: FormData) {
       currency: submission.value.currency,
       date: submission.value.date,
       dueDate: submission.value.dueDate,
-      formAddress: submission.value.formAddress,
-      formEmail: submission.value.formEmail,
-      formName: submission.value.formName,
+      fromAddress: submission.value.fromAddress,
+      fromEmail: submission.value.fromEmail,
+      fromName: submission.value.fromName,
       invoiceItemDescription: submission.value.invoiceItemDescription,
       invoiceItemQuantity: submission.value.invoiceItemQuantity,
       invoiceItemRate: submission.value.invoiceItemRate,
@@ -131,18 +132,34 @@ export async function editInvoice(prevState: any, formData: FormData) {
   emailClient.send({
     from: sender,
     to: [{ email: "subhamwworks@gmail.com" }],
-    template_uuid: "320f205e-f4e6-4084-86ea-a8236d60dbc5",
-    template_variables: {
-      Client_Name: submission.value.clientName,
-      invoicenumber: submission.value.invoiceNumber,
-      duedate: new Intl.DateTimeFormat("en-US", {
-        dateStyle: "long",
-      }).format(new Date(submission.value.date)),
-      totalamount: formatCurrency({
-        amount: submission.value.total,
-        currency: submission.value.currency as any,
-      }),
-      invoiceLink: `http://localhost:3000/api/invoice/${data.id}`,
+    subject: "Reminder Invoice Payment",
+    text: "Remainder To Pay the Invoice Payment",
+  });
+  return NextResponse.json({ success: true });
+}
+
+export async function DeleteInvoice(invoiceId: string) {
+  const session = await requireUser();
+
+  const data = await prisma.invoice.delete({
+    where: {
+      userId: session.user?.id,
+      id: invoiceId,
+    },
+  });
+
+  return redirect("/dashboard/invoices");
+}
+
+export async function MarkAsPaidAction(invoiceId: string) {
+  const session = await requireUser();
+  const data = await prisma.invoice.update({
+    where: {
+      userId: session.user?.id,
+      id: invoiceId,
+    },
+    data: {
+      status: "PAID",
     },
   });
   return redirect("/dashboard/invoices");
