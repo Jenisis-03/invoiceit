@@ -61,7 +61,6 @@ export async function createInvoice(prevState: any, formData: FormData) {
       note: submission.value.note,
       status: submission.value.status,
       total: submission.value.total,
-      note: submission.value.note,
       userId: session.user?.id,
     },
   });
